@@ -1,32 +1,34 @@
 # Experimental Protocol
 
-This protocol is intended to prevent accidental overclaiming.
+This document defines the minimum protocol for making defensible claims about Beyond Similarity.
 
-## Before evaluating
+## Research question
 
-- Check the competition rules and dataset license.
-- Freeze task splits at the repository/project level where possible.
-- Do not use ground-truth relevant IDs when retrieving candidates.
-- Tune graph weights, expansion depth, and seed count on development data only.
-- Freeze parameters before final test evaluation.
+Does graph-guided retrieval improve issue-to-code localization over lexical and semantic baselines, and what is the cost in latency and complexity?
 
-## Required baselines
+## Method variants
 
-1. Lexical retrieval.
-2. A fixed semantic embedding retriever, when the model and dependencies can be pinned.
-3. Graph-only retrieval with a clearly defined candidate-generation rule.
-4. Lexical + semantic hybrid.
-5. Proposed graph-guided method.
+1. **Lexical:** the repository's IDF-weighted token baseline.
+2. **Semantic:** a fixed embedding model, with exact model revision recorded.
+3. **Graph-only:** a clearly documented candidate-generation and ranking rule.
+4. **Lexical + semantic:** a calibrated fusion of lexical and embedding scores.
+5. **Graph-guided hybrid:** lexical/semantic retrieval followed by bounded graph reranking.
+6. **Ablations:** no graph expansion, alternate depth, alternate seed budget, and alternate graph weight.
 
-Use the same query set and comparable candidate budgets. Report each method's limitations.
+The current CLI directly compares lexical and graph-guided lexical retrieval. Semantic and graph-only comparisons require a separate integration/evaluation path and must not be claimed as implemented baselines until added and run.
+
+## Leakage controls
+
+- Split by repository or task group when possible.
+- Keep relevant IDs and test labels out of retrieval-time features.
+- Tune score weights, graph depth, and candidate budgets only on development data.
+- Freeze the selected configuration before final test evaluation.
+- Use the same tasks and comparable candidate budgets for all methods.
+- Record data licenses, filtering, duplicate handling, and preprocessing.
 
 ## Metrics
 
-Report Recall@1/5/10, Precision@1/5/10, MRR, latency, task count, and runtime environment. If the benchmark supports executed patches, separately report the prescribed patch-validation metric. Localization metrics must not be described as patch correctness.
-
-## Ablations
-
-Disable graph expansion, vary graph depth, vary seed limit, and compare confidence-aware retrieval with fixed-budget expansion. Select parameters using development data, not test results.
+Report Recall@1/5/10, Precision@1/5/10, MRR, per-query latency, task count, and runtime environment. If the benchmark executes proposed patches, report its patch pass rate separately. Localization metrics do not establish patch correctness.
 
 ## Results template
 
@@ -35,13 +37,25 @@ Fill this table only with measured values:
 | Method | Recall@1 | Recall@5 | Recall@10 | MRR | Precision@5 | Latency (ms) |
 |---|---:|---:|---:|---:|---:|---:|
 | Lexical | — | — | — | — | — | — |
-| Semantic embedding | — | — | — | — | — | — |
+| Semantic | — | — | — | — | — | — |
 | Graph-only | — | — | — | — | — | — |
 | Lexical + semantic | — | — | — | — | — | — |
-| Proposed | — | — | — | — | — | — |
+| Graph-guided hybrid | — | — | — | — | — | — |
 
-Do not interpret dashes as zero. They are placeholders until measurements have been collected.
+Dashes are unfilled placeholders, not zero scores. Do not report synthetic fixture metrics as benchmark results.
 
-## Reporting
+## Reproducibility checklist
 
-State the number of evaluated tasks, the split strategy, the code/embedding versions, exact parameters, missing-data handling, and uncertainty where appropriate. Retain failed cases and discuss possible leakage, repository overlap, graph incompleteness, and other limitations.
+- [ ] Dataset version, license, and task IDs recorded
+- [ ] Repository-level train/dev/test split fixed
+- [ ] Model identifier and revision pinned
+- [ ] Retrieval parameters tuned on development data only
+- [ ] Exact command and Git commit recorded
+- [ ] Baselines run on identical tasks
+- [ ] Per-task outputs and failures retained
+- [ ] Confidence intervals or paired significance analysis considered
+- [ ] Results independently reproduced
+
+## Known limitations
+
+The AST indexer currently handles Python syntax and approximates same-file call relationships. Dynamic dispatch, imported symbols, decorators, aliases, and attribute calls can cause missing or inaccurate edges. The graph is treated as undirected for proximity scoring. The optional MiniLM encoder is a general-purpose text model, not a specialized code encoder. These constraints must be acknowledged in any paper.
