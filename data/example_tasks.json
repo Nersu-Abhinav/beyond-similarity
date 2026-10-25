@@ -1,0 +1,26 @@
+[
+  {
+    "task_id": "synthetic-example-001",
+    "query": "reject malformed input in parser",
+    "nodes": [
+      {"id": "parser", "name": "parse_input", "text": "Parse input text and invoke validation"},
+      {"id": "validator", "name": "validate_input", "text": "Reject malformed or missing input values"},
+      {"id": "serializer", "name": "serialize_result", "text": "Convert results to JSON"},
+      {"id": "logger", "name": "write_log", "text": "Write diagnostic messages to log output"}
+    ],
+    "edges": [["parser", "validator"], ["serializer", "logger"]],
+    "relevant_ids": ["validator"]
+  },
+  {
+    "task_id": "synthetic-example-002",
+    "query": "format output as json",
+    "nodes": [
+      {"id": "parser", "name": "parse_input", "text": "Parse input text and invoke validation"},
+      {"id": "validator", "name": "validate_input", "text": "Reject malformed or missing input values"},
+      {"id": "serializer", "name": "serialize_result", "text": "Convert results and format JSON output"},
+      {"id": "logger", "name": "write_log", "text": "Write diagnostic messages to log output"}
+    ],
+    "edges": [["parser", "validator"], ["serializer", "logger"]],
+    "relevant_ids": ["serializer"]
+  }
+]
