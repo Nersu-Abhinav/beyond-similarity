@@ -130,6 +130,8 @@ This repository separates **retrieval** from **patch generation**. That keeps ex
 
 ### Recommended competition agent
 
+The repository's [model strategy configuration](configs/model_strategy.yaml) records the coding-agent model and optional retrieval encoder separately. It is metadata for this project, **not** a substitute for the official submission's validated `agent.yaml`.
+
 For the official **Google – Gemma 4 Developer Agent Competition**, the published rules specify the model variant `gemma-4-31b-it-qat-w4a16-ct` for every agent and subagent. Use that exact supported variant in the official Kaggle harness, not an arbitrary replacement. Check the current rules before submission because organizers may update them.
 
 - [Official developer-agent competition](https://www.kaggle.com/competitions/gemma-4-developer-agent)
@@ -163,6 +165,8 @@ beyond-similarity/
 │   ├── source_index.py    # Python AST and call-graph extraction
 │   ├── semantic.py        # optional embedding retrieval
 │   └── cli.py             # demo and evaluation CLI
+├── configs/
+│   └── model_strategy.yaml # documented Gemma 4 + retrieval configuration
 ├── data/
 │   └── example_tasks.json # synthetic smoke-test fixture only
 ├── docs/
