@@ -6,6 +6,9 @@ venv/
 .pytest_cache/
 .coverage
 htmlcov/
+build/
+dist/
+*.egg-info/
 results.json
 results.csv
 .DS_Store
