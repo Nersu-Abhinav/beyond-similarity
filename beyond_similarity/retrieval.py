@@ -6,9 +6,9 @@ from __future__ import annotations
 
 import math
 import re
-from collections import Counter, defaultdict, deque
+from collections import Counter, deque
 from dataclasses import dataclass
-from typing import Iterable, Mapping, Sequence
+from typing import Iterable, Sequence
 
 
 _TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z_0-9]*|\d+")
@@ -122,7 +122,7 @@ class RepositoryIndex:
     ) -> dict[str, float]:
         """Score nodes by shortest distance from seed candidates.
 
-        Distance 0 gets score 1.0; distance d > 0 gets 1/(d+1).
+        Distance 0 gets score 1.0; distance d > 0 gets score 1/(d+1).
         Nodes beyond max_depth or disconnected from seeds receive 0.
         """
         if max_depth < 0:
@@ -148,10 +148,10 @@ class RepositoryIndex:
                     queue.append(neighbor)
 
         return {
-            node_id: (1.0 / (dist + 1) if node_id in distance else 0.0)
-            for node_id, dist in (
-                distance.get(node_id, -1) for node_id in self.nodes
+            node_id: (
+                1.0 / (distance[node_id] + 1) if node_id in distance else 0.0
             )
+            for node_id in self.nodes
         }
 
     def rank_lexical(self, query: str) -> list[RankedCandidate]:
@@ -189,8 +189,6 @@ class RepositoryIndex:
             node_id: 0.0 for node_id in self.nodes
         }
 
-        # Preserve lexical evidence in the score; graph-only candidates can
-        # enter the ranking but graph evidence cannot prove defect relevance.
         scores = {
             node_id: (1.0 - graph_weight) * lexical[node_id]
             + graph_weight * graph[node_id]
