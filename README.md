@@ -103,6 +103,27 @@ python -m beyond_similarity.cli evaluate --data data/example_tasks.json --output
 
 The core implementation has no required third-party runtime dependencies. The sample data is deliberately small and synthetic; it only checks that the pipeline executes.
 
+### Search a real local Python repository
+
+Run a query against the current directory or a project path:
+
+```bash
+# Rank functions/classes with the graph-aware baseline
+python -m beyond_similarity.cli search-python --root /path/to/project --query "handle invalid authentication token" --k 10
+
+# Use lexical ranking only
+python -m beyond_similarity.cli search-python --root /path/to/project --query "parse configuration" --method lexical
+
+# Export the AST index and approximate dependency edges
+python -m beyond_similarity.cli index-python --root /path/to/project --output source-index.json
+
+# Optional: fuse semantic embeddings with lexical and graph evidence
+pip install -e ".[semantic]"
+python -m beyond_similarity.cli search-python --root /path/to/project --query "retry failed database connection" --semantic
+```
+
+Treat retrieved candidates as leads for inspection, not as proof that a component contains a bug. AST call edges are approximate and cross-file resolution is not complete.
+
 ## 🧠 Model strategy: the right model for the right job
 
 This repository separates **retrieval** from **patch generation**. That keeps experiments reproducible and lets the coding model focus its context on the most relevant code.
