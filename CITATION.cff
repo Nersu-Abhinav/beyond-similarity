@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this research prototype, cite the repository and its version."
+title: "Beyond Similarity: Graph-Guided Retrieval for AI Coding Agents"
+type: software
+authors:
+  - family-names: Abhinav
+    given-names: Nersu
+repository-code: "https://github.com/Nersu-Abhinav/beyond-similarity"
+license: MIT
+version: 0.1.0
+abstract: "A reproducible research prototype for evaluating lexical and graph-guided retrieval in issue-to-code localization. The implementation includes a lexical baseline, graph-aware reranking, ranking metrics, a CLI, and synthetic smoke tests."
