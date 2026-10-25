@@ -11,12 +11,22 @@ from dataclasses import dataclass
 from typing import Iterable, Sequence
 
 
-_TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z_0-9]*|\d+")
+_TOKEN_RE = re.compile(r"[A-Za-z_][A-Za-z_0-9]*|\\d+")
+_CAMEL_BOUNDARY = re.compile(r"(?<=[a-z0-9])(?=[A-Z])")
 
 
 def tokenize(text: str) -> list[str]:
-    """Tokenize words, identifiers, and numbers; lowercase for matching."""
-    return [token.lower() for token in _TOKEN_RE.findall(text or "")]
+    """Tokenize text and retain complete identifiers plus identifier parts."""
+    result: list[str] = []
+    for raw in _TOKEN_RE.findall(text or ""):
+        token = raw.lower()
+        result.append(token)
+        parts = [part for part in token.split("_") if part]
+        if len(parts) == 1:
+            parts = [part for part in _CAMEL_BOUNDARY.sub("_", raw).lower().split("_") if part]
+        if len(parts) > 1:
+            result.extend(parts)
+    return result
 
 
 @dataclass(frozen=True)
