@@ -37,8 +37,8 @@ class CliTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "module.py").write_text(
-                "def validate_input(value):\\n    return value is not None\\n\\n"
-                "def render_page(template):\\n    return template\\n",
+                "def validate_input(value):\n    return value is not None\n\n"
+                "def render_page(template):\n    return template\n",
                 encoding="utf-8",
             )
             result = search_python(root, "validate input", 5, "graph", False, "")
