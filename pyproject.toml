@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "beyond-similarity"
+version = "0.2.0"
+description = "Graph-guided retrieval research prototype for AI coding agents"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { file = "LICENSE" }
+authors = [{ name = "Nersu Abhinav" }]
+dependencies = []
+
+[project.optional-dependencies]
+semantic = ["sentence-transformers>=3.0,<6.0"]
+dev = ["build>=1.2", "ruff>=0.6"]
+
+[project.scripts]
+beyond-similarity = "beyond_similarity.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["beyond_similarity*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
