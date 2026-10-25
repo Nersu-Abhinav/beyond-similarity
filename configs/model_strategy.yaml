@@ -1,0 +1,33 @@
+# Model strategy for Beyond Similarity.
+# This is documentation/config metadata, not an official Kaggle agent.yaml.
+# The official competition harness has its own validated Agent Config schema.
+
+coding_agent:
+  purpose: "Patch generation and multi-step repository reasoning"
+  competition: "Google - Gemma 4 Developer Agent Competition"
+  model_id: "gemma-4-31b-it-qat-w4a16-ct"
+  selection_note: "The official competition overview currently specifies this variant for every agent/subagent. Re-check the current rules before packaging."
+  weights_in_repository: false
+  execution: "Run inside the official Kaggle evaluation harness; do not assume a generic local transformers load is equivalent."
+
+retrieval:
+  lexical:
+    enabled: true
+    implementation: "beyond_similarity.retrieval.RepositoryIndex"
+  graph:
+    enabled: true
+    default_graph_weight: 0.25
+    max_depth: 2
+    seed_limit: 5
+  semantic:
+    enabled_by_default: false
+    optional_package: "sentence-transformers"
+    default_model_id: "sentence-transformers/all-MiniLM-L6-v2"
+    note: "General-purpose text encoder for local experiments, not the coding agent and not a code-specialized model. Compare against permitted competition-provided embeddings."
+
+reproducibility:
+  pin_model_revision: true
+  cache_embeddings: true
+  tune_on_development_split_only: true
+  freeze_configuration_before_test: true
+  report_real_benchmark_metrics_only: true
