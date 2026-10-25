@@ -37,6 +37,14 @@ def load_tasks(path: Path) -> list[dict[str, Any]]:
 
 
 def evaluate_task(task: dict[str, Any], k_values: tuple[int, ...]) -> dict[str, Any]:
+    """Evaluate lexical and graph-guided retrieval on one annotated task."""
+    required = {"query", "nodes"}
+    missing = required - task.keys()
+    if missing:
+        raise ValueError(f"task is missing required keys: {sorted(missing)}")
+    if not isinstance(task["nodes"], list) or not task["nodes"]:
+        raise ValueError("task nodes must be a non-empty list")
+
     nodes = [
         CodeNode(
             id=str(item["id"]),
@@ -47,6 +55,10 @@ def evaluate_task(task: dict[str, Any], k_values: tuple[int, ...]) -> dict[str, 
     ]
     edges = [(str(edge[0]), str(edge[1])) for edge in task.get("edges", [])]
     relevant = [str(item) for item in task.get("relevant_ids", [])]
+    unknown_relevant = set(relevant) - {node.id for node in nodes}
+    if unknown_relevant:
+        raise ValueError(f"relevant_ids contain unknown node IDs: {sorted(unknown_relevant)}")
+
     index = RepositoryIndex(nodes, edges)
     query = str(task["query"])
 
@@ -75,6 +87,7 @@ def evaluate_task(task: dict[str, Any], k_values: tuple[int, ...]) -> dict[str, 
 
 
 def run_evaluation(path: Path, k_values: tuple[int, ...]) -> dict[str, Any]:
+    """Return per-task results and macro-averaged metrics."""
     tasks = load_tasks(path)
     if not tasks:
         raise ValueError("dataset contains no tasks")
@@ -90,10 +103,18 @@ def run_evaluation(path: Path, k_values: tuple[int, ...]) -> dict[str, Any]:
             name: mean([float(item[name]) for item in method_results])
             for name in metric_names
         }
-    return {"summary": summary, "per_task": results}
+    return {
+        "summary": summary,
+        "per_task": results,
+        "warning": (
+            "If the input is synthetic or illustrative, these numbers are smoke-test "
+            "outputs only and must not be reported as benchmark evidence."
+        ),
+    }
 
 
 def demo() -> dict[str, Any]:
+    """Run a tiny synthetic smoke test; it is not a benchmark."""
     fixture = {
         "task_id": "synthetic-smoke-test",
         "query": "reject invalid input during parsing",
@@ -130,6 +151,7 @@ def main() -> None:
 
     rendered = json.dumps(result, indent=2, sort_keys=True)
     if getattr(args, "output", None):
+        args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(rendered + "\n", encoding="utf-8")
     print(rendered)
 
