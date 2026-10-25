@@ -243,6 +243,9 @@ No fabricated scores, accuracy claims, or leaderboard positions are presented he
 
 - [x] Dependency-free lexical retrieval baseline
 - [x] Graph-aware reranking prototype
+- [x] Python AST indexer and approximate same-file call graph
+- [x] Optional semantic retrieval adapter
+- [x] Local repository search and index-export CLI
 - [x] Ranking metrics and command-line evaluation
 - [x] Synthetic smoke-test fixture and unit tests
 - [x] CI workflow
