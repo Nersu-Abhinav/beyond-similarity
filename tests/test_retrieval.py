@@ -16,7 +16,7 @@ class RetrievalTests(unittest.TestCase):
         )
 
     def test_tokenizer_handles_identifiers_and_case(self):
-        self.assertEqual(tokenize("Parse_Input value42"), ["parse_input", "value42"])
+        self.assertEqual(tokenize("Parse_Input value42"), ["parse_input", "parse", "input", "value42"])
 
     def test_lexical_results_cover_all_nodes(self):
         results = self.index.rank_lexical("reject malformed input")
